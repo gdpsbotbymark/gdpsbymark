@@ -8,8 +8,8 @@
         #resizableIframe {
             width: 641px;
             height: 1729px;
-            resize: both; /* Позволяет изменять размеры по обоим осям */
-            overflow: auto; /* Показывает полосы прокрутки, если содержимое больше размера iframe */
+            resize: both;
+            overflow: auto;
         }
     </style>
 </head>
@@ -18,13 +18,24 @@
 <iframe id="resizableIframe" src="https://blazehost.ru/dashboard/index.php" frameborder="0">Загрузка…</iframe>
 
 <script>
-    // JavaScript для динамического изменения размеров iframe
     const iframe = document.getElementById('resizableIframe');
 
-    iframe.contentWindow.addEventListener('resize', function() {
-        // Устанавливаем новые размеры iframe при изменении размера окна
-        iframe.style.width = window.innerWidth + 'px';
-        iframe.style.height = window.innerHeight + 'px';
+    window.addEventListener('message', function(event) {
+        // Обработка сообщений от iframe
+        if (event.origin === 'https://blazehost.ru') {
+            // Устанавливаем новые размеры iframe
+            iframe.style.width = event.data.width + 'px';
+            iframe.style.height = event.data.height + 'px';
+        }
+    });
+
+    // Добавляем обработчик события resize для изменения размеров iframe
+    window.addEventListener('resize', function() {
+        // Передаем новые размеры iframe с использованием postMessage
+        iframe.contentWindow.postMessage({
+            width: window.innerWidth,
+            height: window.innerHeight
+        }, 'https://blazehost.ru');
     });
 </script>
 
